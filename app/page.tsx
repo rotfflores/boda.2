@@ -38,6 +38,8 @@ export default function Home() {
   const [sent, setSent] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [guestCount, setGuestCount] = useState(2);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,6 +57,22 @@ export default function Home() {
     return () => window.removeEventListener("keydown", close);
   }, [lightbox]);
 
+  useEffect(() => {
+    const updateProgress = () => {
+      const available = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(available > 0 ? (window.scrollY / available) * 100 : 0);
+    };
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    return () => window.removeEventListener("scroll", updateProgress);
+  }, []);
+
+  const copyAddress = async (address: string) => {
+    await navigator.clipboard.writeText(address);
+    setNotice("Dirección copiada");
+    window.setTimeout(() => setNotice(""), 2200);
+  };
+
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSent(true);
@@ -62,6 +80,7 @@ export default function Home() {
 
   return (
     <main>
+      <div className="reading-progress" style={{ width: `${scrollProgress}%` }} aria-hidden="true" />
       <section className="hero" id="inicio">
         <div className="hero-photo" aria-hidden="true" />
         <div className="hero-grain" aria-hidden="true" />
@@ -136,14 +155,14 @@ export default function Home() {
             <p className="eyebrow">Ceremonia · 17:00 h</p>
             <h3>Templo de San Francisco</h3>
             <p>San Francisco 21, Zona Centro<br />San Miguel de Allende</p>
-            <a className="text-link" href="https://maps.google.com/?q=Templo+de+San+Francisco+San+Miguel+de+Allende" target="_blank" rel="noreferrer">Ver ubicación <span>↗</span></a>
+            <div className="location-actions"><a className="text-link" href="https://maps.google.com/?q=Templo+de+San+Francisco+San+Miguel+de+Allende" target="_blank" rel="noreferrer">Ver ubicación <span>↗</span></a><button type="button" onClick={() => copyAddress("San Francisco 21, Zona Centro, San Miguel de Allende")}>Copiar dirección</button></div>
           </article>
           <article>
             <span className="number">02</span>
             <p className="eyebrow">Recepción · 19:00 h</p>
             <h3>Casa Adela</h3>
             <p>Camino a Alcocer km 2.2<br />San Miguel de Allende</p>
-            <a className="text-link" href="https://maps.google.com/?q=Casa+Adela+San+Miguel+de+Allende" target="_blank" rel="noreferrer">Ver ubicación <span>↗</span></a>
+            <div className="location-actions"><a className="text-link" href="https://maps.google.com/?q=Casa+Adela+San+Miguel+de+Allende" target="_blank" rel="noreferrer">Ver ubicación <span>↗</span></a><button type="button" onClick={() => copyAddress("Camino a Alcocer km 2.2, San Miguel de Allende")}>Copiar dirección</button></div>
           </article>
         </div>
       </section>
@@ -179,7 +198,7 @@ export default function Home() {
           <p className="eyebrow">Confirmación de asistencia</p>
           <h2>¿Nos acompañas?</h2>
           <p>Por favor confirma tu asistencia antes del 18 de septiembre de 2026. Hemos reservado <strong>2 lugares</strong> en tu honor.</p>
-          <p className="contact">¿Dudas? Escríbenos<br /><a href="tel:+524151234567">+52 415 123 4567</a></p>
+          <p className="contact">¿Dudas? Escríbenos por WhatsApp<br /><a href="https://wa.me/526182051723?text=Hola%2C%20tengo%20una%20duda%20sobre%20la%20boda%20de%20Sof%C3%ADa%20y%20Sebasti%C3%A1n" target="_blank" rel="noreferrer" aria-label="Abrir WhatsApp al 618 205 17 23">618 205 17 23 <span>↗</span></a></p>
         </div>
         {sent ? (
           <div className="thanks" role="status"><span>S&S</span><h3>¡Gracias por confirmar!</h3><p>Tu respuesta quedó registrada. Nos emociona celebrar contigo.</p></div>
@@ -209,8 +228,12 @@ export default function Home() {
       </footer>
 
       <div className="floating-tools" aria-label="Herramientas de la invitación">
+        <a className="tool-whatsapp" href="https://wa.me/526182051723?text=Hola%2C%20tengo%20una%20duda%20sobre%20la%20boda%20de%20Sof%C3%ADa%20y%20Sebasti%C3%A1n" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><span>WA</span><i>WhatsApp</i></a>
+        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda%20Sofia%20y%20Sebastian&dates=20261018T230000Z/20261019T050000Z&location=San%20Miguel%20de%20Allende" target="_blank" rel="noreferrer" aria-label="Agregar al calendario"><span>＋</span><i>Calendario</i></a>
         <a href="#rsvp" aria-label="Confirmar asistencia"><span>✓</span><i>Confirmar</i></a>
+        <a href="#inicio" aria-label="Volver al inicio"><span>↑</span><i>Inicio</i></a>
       </div>
+      {notice && <div className="toast" role="status">{notice}</div>}
       {lightbox && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label="Fotografía ampliada" onClick={() => setLightbox(null)}>
           <button onClick={() => setLightbox(null)} aria-label="Cerrar fotografía">×</button>
