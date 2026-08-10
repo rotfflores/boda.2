@@ -37,13 +37,14 @@ function Countdown() {
 export default function Home() {
   const [sent, setSent] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [giftOpen, setGiftOpen] = useState(false);
   const [guestCount, setGuestCount] = useState(2);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")),
+      (entries) => entries.forEach((entry) => entry.target.classList.toggle("is-visible", entry.isIntersecting)),
       { threshold: 0.12 },
     );
     document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));
@@ -56,6 +57,13 @@ export default function Home() {
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, [lightbox]);
+
+  useEffect(() => {
+    if (!giftOpen) return;
+    const close = (event: KeyboardEvent) => event.key === "Escape" && setGiftOpen(false);
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [giftOpen]);
 
   useEffect(() => {
     const updateProgress = () => {
@@ -189,7 +197,7 @@ export default function Home() {
           <p className="eyebrow">Mesa de regalos</p>
           <h2>Tu presencia es el mejor regalo</h2>
           <p>Si además deseas tener un detalle con nosotros, hemos preparado una mesa de regalos.</p>
-          <a className="button" href="#rsvp">Ver mesa de regalos</a>
+          <button className="button" type="button" onClick={() => setGiftOpen(true)}>Ver mesa de regalos</button>
         </div>
       </section>
 
@@ -229,11 +237,22 @@ export default function Home() {
 
       <div className="floating-tools" aria-label="Herramientas de la invitación">
         <a className="tool-whatsapp" href="https://wa.me/526182051723?text=Hola%2C%20tengo%20una%20duda%20sobre%20la%20boda%20de%20Sof%C3%ADa%20y%20Sebasti%C3%A1n" target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp"><span>WA</span><i>WhatsApp</i></a>
-        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda%20Sofia%20y%20Sebastian&dates=20261018T230000Z/20261019T050000Z&location=San%20Miguel%20de%20Allende" target="_blank" rel="noreferrer" aria-label="Agregar al calendario"><span>＋</span><i>Calendario</i></a>
         <a href="#rsvp" aria-label="Confirmar asistencia"><span>✓</span><i>Confirmar</i></a>
         <a href="#inicio" aria-label="Volver al inicio"><span>↑</span><i>Inicio</i></a>
       </div>
       {notice && <div className="toast" role="status">{notice}</div>}
+      {giftOpen && (
+        <div className="gift-modal" role="dialog" aria-modal="true" aria-labelledby="gift-title" onClick={() => setGiftOpen(false)}>
+          <div className="gift-card" onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close" type="button" onClick={() => setGiftOpen(false)} aria-label="Cerrar mesa de regalos">×</button>
+            <span className="gift-monogram">S&S</span>
+            <p className="eyebrow">Mesa de regalos</p>
+            <h2 id="gift-title">Tu presencia es nuestro mejor regalo</h2>
+            <p>Si deseas tener un detalle con nosotros, escríbenos por WhatsApp y con gusto te compartiremos la información.</p>
+            <a className="button gift-whatsapp" href="https://wa.me/526182051723?text=Hola%2C%20quisiera%20conocer%20la%20informaci%C3%B3n%20de%20la%20mesa%20de%20regalos" target="_blank" rel="noreferrer">Solicitar información por WhatsApp</a>
+          </div>
+        </div>
+      )}
       {lightbox && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label="Fotografía ampliada" onClick={() => setLightbox(null)}>
           <button onClick={() => setLightbox(null)} aria-label="Cerrar fotografía">×</button>
