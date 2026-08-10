@@ -36,6 +36,34 @@ function Countdown() {
 
 export default function Home() {
   const [sent, setSent] = useState(false);
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")),
+      { threshold: 0.12 },
+    );
+    document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const close = (event: KeyboardEvent) => event.key === "Escape" && setLightbox(null);
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [lightbox]);
+
+  const share = async () => {
+    const data = { title: "Boda de Valentina & Sebastián", text: "Acompáñanos a celebrar el 18 de octubre de 2026", url: window.location.href };
+    if (navigator.share) await navigator.share(data);
+    else {
+      await navigator.clipboard.writeText(window.location.href);
+      setNotice("Enlace copiado");
+      window.setTimeout(() => setNotice(""), 2200);
+    }
+  };
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSent(true);
@@ -44,6 +72,8 @@ export default function Home() {
   return (
     <main>
       <section className="hero" id="inicio">
+        <div className="hero-photo" aria-hidden="true" />
+        <div className="hero-grain" aria-hidden="true" />
         <div className="leaf leaf-one" aria-hidden="true" />
         <div className="leaf leaf-two" aria-hidden="true" />
         <nav className="nav" aria-label="Navegación principal">
@@ -62,9 +92,10 @@ export default function Home() {
           <a className="text-link" href="#detalles">Descubre los detalles <span>↓</span></a>
         </div>
         <p className="hero-place">San Miguel de Allende<br /><span>Guanajuato, México</span></p>
+        <p className="scroll-note"><span /> desliza para descubrir</p>
       </section>
 
-      <section className="intro section" id="historia">
+      <section className="intro section reveal" id="historia" data-reveal>
         <p className="eyebrow">Después de 2,847 días juntos</p>
         <h2>El siguiente capítulo<br />comienza aquí.</h2>
         <div className="ornament"><span>◆</span></div>
@@ -72,7 +103,28 @@ export default function Home() {
         <blockquote>“Y de pronto, todas las canciones de amor<br />tenían sentido.”</blockquote>
       </section>
 
-      <section className="date-section" aria-label="Fecha de la boda">
+      <section className="gallery-section" aria-label="Galería de inspiración">
+        <div className="gallery-title reveal" data-reveal>
+          <p className="eyebrow">El escenario de nuestra historia</p>
+          <h2>Entre cantera, luz<br />y bugambilias</h2>
+        </div>
+        <div className="gallery-grid">
+          {[
+            ["/images/couple-street.jpg", "Un paseo para siempre", "Pareja caminando por una calle histórica"],
+            ["/images/cathedral.jpg", "El corazón de San Miguel", "Arquitectura de San Miguel de Allende"],
+            ["/images/reception.jpg", "Una mesa para celebrar", "Mesa de recepción elegante con flores"],
+            ["/images/garden-table.jpg", "La noche que imaginamos", "Recepción de boda al aire libre"],
+          ].map(([src, caption, alt], index) => (
+            <button className={`gallery-item gallery-${index + 1} reveal`} data-reveal key={src} onClick={() => setLightbox(src)} aria-label={`Ampliar: ${caption}`}>
+              <img src={src} alt={alt} loading={index > 1 ? "lazy" : "eager"} />
+              <span><i>0{index + 1}</i>{caption}<b>＋</b></span>
+            </button>
+          ))}
+        </div>
+        <p className="photo-credit">Fotografías de inspiración: Unsplash y Pexels</p>
+      </section>
+
+      <section className="date-section" aria-label="Fecha de la boda" data-reveal>
         <div className="date-card">
           <p className="eyebrow">Reserva la fecha</p>
           <div className="date-lockup"><span>DOM</span><strong>18</strong><span>OCT<br />2026</span></div>
@@ -82,7 +134,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="details section" id="detalles">
+      <section className="details section reveal" id="detalles" data-reveal>
         <div className="section-heading">
           <p className="eyebrow">Celebremos juntos</p>
           <h2>Los detalles del día</h2>
@@ -105,7 +157,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="itinerary section">
+      <section className="itinerary section reveal" data-reveal>
         <p className="eyebrow">Un día para recordar</p>
         <h2>Nuestro itinerario</h2>
         <div className="timeline">
@@ -115,7 +167,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="dress-gifts section">
+      <section className="dress-gifts section reveal" data-reveal>
         <div>
           <p className="eyebrow">Código de vestimenta</p>
           <h2>Formal de jardín</h2>
@@ -131,7 +183,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="rsvp section" id="rsvp">
+      <section className="rsvp section reveal" id="rsvp" data-reveal>
         <div className="rsvp-copy">
           <p className="eyebrow">Répondez s’il vous plaît</p>
           <h2>¿Nos acompañas?</h2>
@@ -156,6 +208,18 @@ export default function Home() {
         <div>V <span>&</span> S</div>
         <p>18 · 10 · 2026</p>
       </footer>
+
+      <div className="floating-tools" aria-label="Herramientas de la invitación">
+        <button onClick={share} aria-label="Compartir invitación"><span>↗</span><i>Compartir</i></button>
+        <a href="#rsvp" aria-label="Confirmar asistencia"><span>✓</span><i>Confirmar</i></a>
+      </div>
+      {notice && <div className="toast" role="status">{notice}</div>}
+      {lightbox && (
+        <div className="lightbox" role="dialog" aria-modal="true" aria-label="Fotografía ampliada" onClick={() => setLightbox(null)}>
+          <button onClick={() => setLightbox(null)} aria-label="Cerrar fotografía">×</button>
+          <img src={lightbox} alt="Fotografía ampliada de la boda" onClick={(event) => event.stopPropagation()} />
+        </div>
+      )}
     </main>
   );
 }
