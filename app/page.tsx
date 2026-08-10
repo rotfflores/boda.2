@@ -56,7 +56,7 @@ export default function Home() {
   }, [lightbox]);
 
   const share = async () => {
-    const data = { title: "Boda de Valentina & Sebastián", text: "Acompáñanos a celebrar el 18 de octubre de 2026", url: window.location.href };
+    const data = { title: "Boda de Sofía y Sebastián", text: "Acompáñanos a celebrar el 18 de octubre de 2026", url: window.location.href };
     if (navigator.share) await navigator.share(data);
     else {
       await navigator.clipboard.writeText(window.location.href);
@@ -77,7 +77,7 @@ export default function Home() {
         <div className="leaf leaf-one" aria-hidden="true" />
         <div className="leaf leaf-two" aria-hidden="true" />
         <nav className="nav" aria-label="Navegación principal">
-          <a className="monogram" href="#inicio" aria-label="Inicio">V<span>&</span>S</a>
+          <a className="monogram" href="#inicio" aria-label="Inicio">S<span>&</span>S</a>
           <div className="nav-links">
             <a href="#historia">Nuestra historia</a>
             <a href="#detalles">Detalles</a>
@@ -87,7 +87,7 @@ export default function Home() {
 
         <div className="hero-content">
           <p className="eyebrow">Nuestra boda · 18 de octubre de 2026</p>
-          <h1><span>Valentina</span><em>&</em><span>Sebastián</span></h1>
+          <h1><span>Sofía</span><em>&</em><span>Sebastián</span></h1>
           <p className="hero-copy">Hay momentos en la vida que son especiales por sí solos,<br />pero compartirlos con ustedes los vuelve inolvidables.</p>
           <a className="text-link" href="#detalles">Descubre los detalles <span>↓</span></a>
         </div>
@@ -130,7 +130,7 @@ export default function Home() {
           <div className="date-lockup"><span>DOM</span><strong>18</strong><span>OCT<br />2026</span></div>
           <p>A las cinco de la tarde</p>
           <Countdown />
-          <a className="button button-light" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda%20Valentina%20y%20Sebastian&dates=20261018T230000Z/20261019T050000Z&location=San%20Miguel%20de%20Allende" target="_blank" rel="noreferrer">Agregar al calendario</a>
+          <a className="button button-light" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda%20Sofia%20y%20Sebastian&dates=20261018T230000Z/20261019T050000Z&location=San%20Miguel%20de%20Allende" target="_blank" rel="noreferrer">Agregar al calendario</a>
         </div>
       </section>
 
@@ -185,13 +185,13 @@ export default function Home() {
 
       <section className="rsvp section reveal" id="rsvp" data-reveal>
         <div className="rsvp-copy">
-          <p className="eyebrow">Répondez s’il vous plaît</p>
+          <p className="eyebrow">Confirmación de asistencia</p>
           <h2>¿Nos acompañas?</h2>
           <p>Por favor confirma tu asistencia antes del 18 de septiembre de 2026. Hemos reservado <strong>2 lugares</strong> en tu honor.</p>
           <p className="contact">¿Dudas? Escríbenos<br /><a href="tel:+524151234567">+52 415 123 4567</a></p>
         </div>
         {sent ? (
-          <div className="thanks" role="status"><span>V&S</span><h3>¡Gracias por confirmar!</h3><p>Tu respuesta quedó registrada. Nos emociona celebrar contigo.</p></div>
+          <div className="thanks" role="status"><span>S&S</span><h3>¡Gracias por confirmar!</h3><p>Tu respuesta quedó registrada. Nos emociona celebrar contigo.</p></div>
         ) : (
           <form onSubmit={submit}>
             <label>Nombre completo<input required name="name" placeholder="Escribe tu nombre" /></label>
@@ -205,7 +205,7 @@ export default function Home() {
 
       <footer>
         <p>Gracias por ser parte de nuestra historia.</p>
-        <div>V <span>&</span> S</div>
+        <div>S <span>&</span> S</div>
         <p>18 · 10 · 2026</p>
       </footer>
 
