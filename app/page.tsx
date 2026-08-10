@@ -203,15 +203,18 @@ export default function Home() {
 
       <section className="rsvp section reveal" id="rsvp" data-reveal>
         <div className="rsvp-copy">
+          <span className="rsvp-monogram" aria-hidden="true">S <i>&</i> S</span>
           <p className="eyebrow">Confirmación de asistencia</p>
           <h2>¿Nos acompañas?</h2>
+          <div className="rsvp-ornament" aria-hidden="true"><span>✦</span></div>
           <p>Por favor confirma tu asistencia antes del 18 de septiembre de 2026. Hemos reservado <strong>2 lugares</strong> en tu honor.</p>
           <p className="contact">¿Dudas? Escríbenos por WhatsApp<br /><a href="https://wa.me/526182051723?text=Hola%2C%20tengo%20una%20duda%20sobre%20la%20boda%20de%20Sof%C3%ADa%20y%20Sebasti%C3%A1n" target="_blank" rel="noreferrer" aria-label="Abrir WhatsApp al 618 205 17 23">618 205 17 23 <span>↗</span></a></p>
         </div>
         {sent ? (
           <div className="thanks" role="status"><span>S&S</span><h3>¡Gracias por confirmar!</h3><p>Tu respuesta quedó registrada. Nos emociona celebrar contigo.</p></div>
         ) : (
-          <form onSubmit={submit}>
+          <form className="rsvp-form" onSubmit={submit}>
+            <p className="form-heading"><span>Tu respuesta</span><small>Será un honor celebrar contigo</small></p>
             <fieldset><legend>¿Podrás acompañarnos?</legend><label><input required type="radio" name="attending" value="yes" /> Sí, ahí estaré</label><label><input type="radio" name="attending" value="no" /> No podré asistir</label></fieldset>
             <label>Número de asistentes<select name="guests" value={guestCount} onChange={(event) => setGuestCount(Number(event.target.value))}><option value="1">1 invitado</option><option value="2">2 invitados</option></select></label>
             <div className="guest-fields" aria-live="polite">
