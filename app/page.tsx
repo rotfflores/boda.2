@@ -37,7 +37,7 @@ function Countdown() {
 export default function Home() {
   const [sent, setSent] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
-  const [notice, setNotice] = useState("");
+  const [guestCount, setGuestCount] = useState(2);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -55,15 +55,6 @@ export default function Home() {
     return () => window.removeEventListener("keydown", close);
   }, [lightbox]);
 
-  const share = async () => {
-    const data = { title: "Boda de Sofía y Sebastián", text: "Acompáñanos a celebrar el 18 de octubre de 2026", url: window.location.href };
-    if (navigator.share) await navigator.share(data);
-    else {
-      await navigator.clipboard.writeText(window.location.href);
-      setNotice("Enlace copiado");
-      window.setTimeout(() => setNotice(""), 2200);
-    }
-  };
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSent(true);
@@ -194,9 +185,16 @@ export default function Home() {
           <div className="thanks" role="status"><span>S&S</span><h3>¡Gracias por confirmar!</h3><p>Tu respuesta quedó registrada. Nos emociona celebrar contigo.</p></div>
         ) : (
           <form onSubmit={submit}>
-            <label>Nombre completo<input required name="name" placeholder="Escribe tu nombre" /></label>
             <fieldset><legend>¿Podrás acompañarnos?</legend><label><input required type="radio" name="attending" value="yes" /> Sí, ahí estaré</label><label><input type="radio" name="attending" value="no" /> No podré asistir</label></fieldset>
-            <label>Número de asistentes<select name="guests" defaultValue="2"><option>1</option><option>2</option></select></label>
+            <label>Número de asistentes<select name="guests" value={guestCount} onChange={(event) => setGuestCount(Number(event.target.value))}><option value="1">1 invitado</option><option value="2">2 invitados</option></select></label>
+            <div className="guest-fields" aria-live="polite">
+              {Array.from({ length: guestCount }, (_, index) => (
+                <label className="guest-field" key={index}>
+                  Nombre del invitado {index + 1}
+                  <input required name={`guest-${index + 1}`} placeholder={index === 0 ? "Nombre y apellido" : "Nombre de tu acompañante"} autoComplete="name" />
+                </label>
+              ))}
+            </div>
             <label>Mensaje para los novios<textarea name="message" placeholder="Déjanos unas palabras…" rows={3} /></label>
             <button className="button" type="submit">Confirmar asistencia</button>
           </form>
@@ -207,13 +205,12 @@ export default function Home() {
         <p>Gracias por ser parte de nuestra historia.</p>
         <div>S <span>&</span> S</div>
         <p>18 · 10 · 2026</p>
+        <small>© 2026 Rotf · Todos los derechos reservados</small>
       </footer>
 
       <div className="floating-tools" aria-label="Herramientas de la invitación">
-        <button onClick={share} aria-label="Compartir invitación"><span>↗</span><i>Compartir</i></button>
         <a href="#rsvp" aria-label="Confirmar asistencia"><span>✓</span><i>Confirmar</i></a>
       </div>
-      {notice && <div className="toast" role="status">{notice}</div>}
       {lightbox && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label="Fotografía ampliada" onClick={() => setLightbox(null)}>
           <button onClick={() => setLightbox(null)} aria-label="Cerrar fotografía">×</button>
