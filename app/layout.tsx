@@ -14,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es"><body>{children}<script src="https://rotfstudio.com/js/invitation-lead.js?v=2" data-invitation="Sofía &amp; Sebastián" /></body></html>;
+  return <html lang="es"><body>{children}<script src="https://rotfstudio.com/js/invitation-lead.js?v=3" data-invitation="Promesa Guanajuatense" /></body></html>;
 }
